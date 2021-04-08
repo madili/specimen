@@ -1,4 +1,4 @@
-defmodule SpecimenTest do
+defmodule Specimen.FixtureTest do
   use ExUnit.Case
   doctest Specimen
 
