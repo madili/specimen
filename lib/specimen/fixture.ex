@@ -4,6 +4,8 @@ defmodule Specimen.Fixture do
   @integer_threshold 60_000_000
   @binary_threshold 10
 
+  defguard is_postive_integer(value) when is_integer(value) and value > 0
+
   def create(:integer) do
     :crypto.rand_uniform(-@integer_threshold, @integer_threshold)
   end
@@ -46,7 +48,7 @@ defmodule Specimen.Fixture do
 
   def create_many(type, count)
       when is_atom(type)
-      when is_integer(count) and count > 0 do
+      when is_postive_integer(count) do
     generator = fn -> create(type) end
 
     generator
