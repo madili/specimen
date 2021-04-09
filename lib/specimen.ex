@@ -15,8 +15,8 @@ defmodule Specimen do
 
   defguard is_fresh(specimen) when not is_nil(specimen.module) and not specimen.built?
 
-  defdelegate create(type), to: Specimen.Fixture
-  defdelegate create_many(type, count), to: Specimen.Fixture
+  defdelegate make(type), to: Specimen.Fixture
+  defdelegate make_many(type, count), to: Specimen.Fixture
 
   def new(module) do
     %Specimen{module: module, built?: false}

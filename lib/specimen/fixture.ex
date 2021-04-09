@@ -6,50 +6,50 @@ defmodule Specimen.Fixture do
 
   defguard is_postive_integer(value) when is_integer(value) and value > 0
 
-  def create(:integer) do
+  def make(:integer) do
     :crypto.rand_uniform(-@integer_threshold, @integer_threshold)
   end
 
-  def create(:string) do
+  def make(:string) do
     UUID.uuid4(:hex)
   end
 
-  def create(:binary) do
+  def make(:binary) do
     :crypto.strong_rand_bytes(@binary_threshold)
   end
 
-  def create(:float) do
+  def make(:float) do
     :rand.uniform()
   end
 
-  def create(:boolean) do
+  def make(:boolean) do
     Enum.random([true, false])
   end
 
-  def create(:date_time) do
-    DateTime.add(DateTime.utc_now(), create(:integer))
+  def make(:date_time) do
+    DateTime.add(DateTime.utc_now(), make(:integer))
   end
 
-  def create(:time) do
-    DateTime.to_time(create(:date_time))
+  def make(:time) do
+    DateTime.to_time(make(:date_time))
   end
 
-  def create(:naive_date_time) do
-    DateTime.to_naive(create(:date_time))
+  def make(:naive_date_time) do
+    DateTime.to_naive(make(:date_time))
   end
 
-  def create(:id) do
+  def make(:id) do
     System.unique_integer([:positive, :monotonic])
   end
 
-  def create(:binary_id) do
+  def make(:binary_id) do
     UUID.string_to_binary!(UUID.uuid4(:hex))
   end
 
-  def create_many(type, count)
+  def make_many(type, count)
       when is_atom(type)
       when is_postive_integer(count) do
-    generator = fn -> create(type) end
+    generator = fn -> make(type) end
 
     generator
     |> Stream.repeatedly()
