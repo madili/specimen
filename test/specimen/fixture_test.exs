@@ -1,6 +1,6 @@
 defmodule Specimen.FixtureTest do
   use ExUnit.Case
-  doctest Specimen
+  doctest Specimen.Fixture
 
   describe "elixir types" do
     test ":integer" do
