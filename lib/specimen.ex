@@ -37,7 +37,7 @@ defmodule Specimen do
   def with(%Specimen{} = specimen, fun)
       when is_fresh(specimen)
       when is_function(fun) do
-    Map.update!(specimen, :funs, &Enum.reverse([fun | &1]))
+    Map.update!(specimen, :funs, &[fun | &1])
   end
 
   def with(%Specimen{} = specimen, field, value)
@@ -54,7 +54,12 @@ defmodule Specimen do
 
   defp transform(%Specimen{module: module, funs: funs} = specimen) do
     struct = struct!(module)
-    result = Enum.reduce(funs, struct, fn fun, acc -> apply(fun, [acc]) end)
+
+    result =
+      funs
+      |> Enum.reverse()
+      |> Enum.reduce(struct, fn fun, acc -> apply(fun, [acc]) end)
+
     Map.put(specimen, :result, result)
   end
 end
