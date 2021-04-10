@@ -1,65 +1,40 @@
 defmodule Specimen do
-  @moduledoc """
-  Documentation for `Specimen`.
-  """
+  @moduledoc false
 
   alias __MODULE__
 
-  @enforce_keys [:module, :built?]
-  defstruct module: nil,
-            result: nil,
-            built?: false,
-            fill?: false,
-            discard: [],
-            funs: []
+  @type t :: %__MODULE__{}
 
-  defguard is_fresh(specimen) when not is_nil(specimen.module) and not specimen.built?
-
-  defdelegate make(type), to: Specimen.Fixture
-  defdelegate make_many(type, count), to: Specimen.Fixture
+  #TODO: pending behaviours:
+  # - autofill using fixture when module is an Ecto Schema (since we can know the types)
+  # - discard fields when creating the struct
+  defstruct module: nil, fill?: false, discard: [], funs: []
 
   def new(module) do
-    %Specimen{module: module, built?: false}
+    %Specimen{module: module}
   end
 
-  def autofill(%Specimen{} = specimen, boolean)
-      when is_fresh(specimen)
-      when is_boolean(boolean) do
+  def autofill(%Specimen{} = specimen, boolean) when is_boolean(boolean) do
     Map.put(specimen, :fill?, boolean)
   end
 
-  def discard(%Specimen{} = specimen, fields)
-      when is_fresh(specimen)
-      when is_list(fields) do
+  def discard(%Specimen{} = specimen, fields) when is_list(fields) do
     Map.put(specimen, :discard, fields)
   end
 
-  def with(%Specimen{} = specimen, fun)
-      when is_fresh(specimen)
-      when is_function(fun) do
+  def with(%Specimen{} = specimen, fun) when is_function(fun) do
     Map.update!(specimen, :funs, &[fun | &1])
   end
 
-  def with(%Specimen{} = specimen, field, value)
-      when is_fresh(specimen)
-      when is_atom(field) do
+  def with(%Specimen{} = specimen, field, value) when is_atom(field) do
     Specimen.with(specimen, &Map.put(&1, field, value))
   end
 
-  def build(%Specimen{} = specimen) when is_fresh(specimen) do
-    specimen
-    |> transform()
-    |> Map.put(:built?, true)
-  end
-
-  defp transform(%Specimen{module: module, funs: funs} = specimen) do
+  def to_struct(%Specimen{module: module, funs: funs}) do
     struct = struct!(module)
 
-    result =
-      funs
-      |> Enum.reverse()
-      |> Enum.reduce(struct, fn fun, acc -> apply(fun, [acc]) end)
-
-    Map.put(specimen, :result, result)
+    funs
+    |> Enum.reverse()
+    |> Enum.reduce(struct, fn fun, s -> apply(fun, [s]) end)
   end
 end
