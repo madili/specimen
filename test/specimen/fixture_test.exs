@@ -49,19 +49,4 @@ defmodule Specimen.FixtureTest do
       assert %NaiveDateTime{} = fixture
     end
   end
-
-  describe "produces fixtures for ecto types (aliases)" do
-    test ":id" do
-      fixture = Fixture.make(:id)
-      assert is_integer(fixture)
-      assert fixture > 0
-    end
-
-    test ":binary_id" do
-      fixture = Fixture.make(:binary_id)
-      assert is_binary(fixture)
-      assert byte_size(fixture) == 16
-      refute String.valid?(fixture)
-    end
-  end
 end

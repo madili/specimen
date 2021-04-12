@@ -38,14 +38,6 @@ defmodule Specimen.Fixture do
     DateTime.to_naive(make(:date_time))
   end
 
-  def make(:id) do
-    System.unique_integer([:positive, :monotonic])
-  end
-
-  def make(:binary_id) do
-    UUID.string_to_binary!(UUID.uuid4(:hex))
-  end
-
   def make_many(type, count)
       when is_atom(type)
       when is_postive_integer(count) do

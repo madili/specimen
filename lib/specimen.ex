@@ -1,21 +1,27 @@
 defmodule Specimen do
   @moduledoc false
 
+  import Specimen.Ecto.Reflector
+
   alias __MODULE__
 
   @type t :: %__MODULE__{}
 
-  #TODO: pending behaviours:
-  # - autofill using fixture when module is an Ecto Schema (since we can know the types)
-  # - discard fields when creating the struct
-  defstruct module: nil, fill?: false, discard: [], funs: []
+  # TODO: pending behaviours:
+  # [x] autofill using fixture when module is an Ecto Schema (since we can know the types)
+  # [ ] discard fields when creating the struct
+  defstruct module: nil, discard: [], funs: []
 
   def new(module) do
     %Specimen{module: module}
   end
 
-  def autofill(%Specimen{} = specimen, boolean) when is_boolean(boolean) do
-    Map.put(specimen, :fill?, boolean)
+  def fill(%Specimen{module: module} = specimen) do
+    if belongs_to_ecto_schema?(module) do
+      fill_schema(specimen)
+    else
+      specimen
+    end
   end
 
   def discard(%Specimen{} = specimen, fields) when is_list(fields) do

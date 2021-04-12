@@ -3,20 +3,22 @@ defmodule SpecimenTest do
 
   doctest Specimen
 
-  alias Specimen.Fixtures.Structs.User
+  alias Specimen.Fixtures.Structs.{User, SchemableUser}
 
   describe "specimen" do
     test "new/1" do
       assert %Specimen{module: User} = Specimen.new(User)
     end
 
-    test "autofill/2" do
+    test "fill/1" do
       specimen =
-        User
+        SchemableUser
         |> Specimen.new()
-        |> Specimen.autofill(true)
+        |> Specimen.fill()
 
-      assert %Specimen{fill?: true} = specimen
+      assert %Specimen{funs: funs} = specimen
+      assert length(SchemableUser.__schema__(:fields)) == length(funs)
+      assert %SchemableUser{} = Specimen.to_struct(specimen)
     end
 
     test "discard/2" do

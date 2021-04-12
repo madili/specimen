@@ -1,4 +1,4 @@
-alias Specimen.Fixtures.Structs.User
+alias Specimen.Fixtures.Structs.{User, SchemableUser}
 
 defmodule Specimen.Fixtures.Factories.DefaultUserFactory do
   use Specimen.Factory, User
@@ -17,6 +17,14 @@ defmodule Specimen.Fixtures.Factories.UserFactory do
 
   def after_making(%User{} = user) do
     Map.put(user, :age, 42)
+  end
+end
+
+defmodule Specimen.Fixtures.Factories.SchemableUserFactory do
+  use Specimen.Factory, SchemableUser
+
+  def build(specimen) do
+    Specimen.fill(specimen)
   end
 
   # TODO: Check hook after inserting when we are integrating with ecto

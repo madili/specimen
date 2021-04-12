@@ -8,5 +8,14 @@ defmodule Specimen.Fixtures.Structs.FactorableUser do
   use Specimen.HasFactory, UserFactory
 
   defstruct [:name, :surname, :age, :email]
+end
 
+defmodule Specimen.Fixtures.Structs.SchemableUser do
+  use Ecto.Schema
+
+  schema "users" do
+    field(:name, :string)
+    field(:surname, :string)
+    field(:age, :integer)
+  end
 end
