@@ -28,7 +28,7 @@ defmodule UserFactory do
   use Specimen.Factory, User
 
   def build(specimen) do
-    Specimen.with(specimen, :name, "John")
+    Specimen.include(specimen, :name, "John")
   end
 
   def state(:surname, %User{} = user) do

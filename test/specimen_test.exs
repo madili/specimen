@@ -21,33 +21,43 @@ defmodule SpecimenTest do
       assert %SchemableUser{} = Specimen.to_struct(specimen)
     end
 
-    test "discard/2" do
+    test "exclude/2" do
       specimen =
         User
         |> Specimen.new()
-        |> Specimen.discard([:name])
+        |> Specimen.exclude(:name)
 
-      assert %Specimen{discard: [:name]} = specimen
+      assert %Specimen{excludes: [:name]} = specimen
+      assert %User{name: nil} = Specimen.to_struct(specimen)
     end
 
-    test "with/2" do
+    test "include/2" do
       specimen =
         User
         |> Specimen.new()
-        |> Specimen.with(&Map.put(&1, :name, "John"))
-        |> Specimen.to_struct()
+        |> Specimen.include(:name)
 
-      assert %User{name: "John"} = specimen
+      assert %Specimen{includes: [:name]} = specimen
+      assert %User{name: "Joseph"} = Specimen.to_struct(specimen)
     end
 
-    test "with/3" do
+    test "include/3" do
       specimen =
         User
         |> Specimen.new()
-        |> Specimen.with(:name, "John")
-        |> Specimen.to_struct()
+        |> Specimen.include(:name, "John")
 
-      assert %User{name: "John"} = specimen
+      assert %Specimen{includes: [:name]} = specimen
+      assert %User{name: "John"} = Specimen.to_struct(specimen)
+    end
+
+    test "transform/2" do
+      specimen =
+        User
+        |> Specimen.new()
+        |> Specimen.transform(&Map.put(&1, :name, "John"))
+
+      assert %User{name: "John"} = Specimen.to_struct(specimen)
     end
   end
 end

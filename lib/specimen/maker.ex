@@ -28,7 +28,7 @@ defmodule Specimen.Maker do
 
   defp apply_states(specimen, factory, states) do
     Enum.reduce(states, specimen, fn state, specimen ->
-      Specimen.with(specimen, &apply(factory, :state, [state, &1]))
+      Specimen.include(specimen, &apply(factory, :state, [state, &1]))
     end)
   end
 end

@@ -29,14 +29,14 @@ defmodule Specimen.Ecto.Reflector do
   # TODO: Generate Ecto specific types fixtures.
   # See if we want to incorporate these in the 'main' workflow in the future under a different alias.
   defp make_fixture({field, :id}, specimen) do
-    Specimen.with(specimen, field, System.unique_integer([:positive, :monotonic]))
+    Specimen.include(specimen, field, System.unique_integer([:positive, :monotonic]))
   end
 
   defp make_fixture({field, :binary_id}, specimen) do
-    Specimen.with(specimen, field, UUID.string_to_binary!(UUID.uuid4(:hex)))
+    Specimen.include(specimen, field, UUID.string_to_binary!(UUID.uuid4(:hex)))
   end
 
   defp make_fixture({field, type}, specimen) do
-    Specimen.with(specimen, field, Specimen.Fixture.make(type))
+    Specimen.include(specimen, field, Specimen.Fixture.make(type))
   end
 end
