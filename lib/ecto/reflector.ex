@@ -1,14 +1,20 @@
 defmodule Specimen.Ecto.Reflector do
   @moduledoc false
 
-  def belongs_to_ecto_schema?(module) do
-    Enum.any?(module.__info__(:functions), &match?({:__schema__, _}, &1))
+  def maybe_autofill_specimen(%{module: module} = specimen) do
+    maybe_autofill_specimen(specimen, is_ecto_schema?(module))
   end
 
-  def fill_schema(%{module: module} = specimen) do
+  defp maybe_autofill_specimen(specimen, false), do: specimen
+
+  defp maybe_autofill_specimen(%{module: module} = specimen, true) do
     module
     |> fields_with_types()
     |> apply_fixtures(specimen)
+  end
+
+  defp is_ecto_schema?(module) do
+    Enum.any?(module.__info__(:functions), &match?({:__schema__, _}, &1))
   end
 
   defp fields_with_types(module) do

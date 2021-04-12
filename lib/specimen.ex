@@ -1,8 +1,6 @@
 defmodule Specimen do
   @moduledoc false
 
-  import Specimen.Ecto.Reflector
-
   alias __MODULE__
 
   @type t :: %__MODULE__{}
@@ -16,12 +14,8 @@ defmodule Specimen do
     %Specimen{module: module}
   end
 
-  def fill(%Specimen{module: module} = specimen) do
-    if belongs_to_ecto_schema?(module) do
-      fill_schema(specimen)
-    else
-      specimen
-    end
+  def fill(%Specimen{} = specimen) do
+    Specimen.Ecto.Reflector.maybe_autofill_specimen(specimen)
   end
 
   def discard(%Specimen{} = specimen, fields) when is_list(fields) do
