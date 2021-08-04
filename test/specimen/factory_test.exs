@@ -13,9 +13,11 @@ defmodule Specimen.FactoryTest do
     end
 
     test "build/1 raises when using invalid module" do
+      defmodule UnknownModule, do: defstruct [:name]
+            
       specimen = Specimen.new(UnknownModule)
 
-      assert_raise RuntimeError, "This factory can't be used to build UnknownModule", fn ->
+      assert_raise RuntimeError, "This factory can't be used to build Specimen.FactoryTest.UnknownModule", fn ->
         DefaultUserFactory.build(specimen)
       end
     end
