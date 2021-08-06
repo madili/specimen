@@ -6,7 +6,7 @@ defmodule Specimen.MakerTest do
   alias Specimen.Maker
 
   alias Specimen.Fixtures.Structs.User
-  alias Specimen.Fixtures.Factories.UserFactory
+  alias Specimen.Fixtures.Factories.{UserFactory, DistinctUserFactory}
 
   describe "maker" do
     test "make_one/3 returns exactly one built struct" do
@@ -18,5 +18,11 @@ defmodule Specimen.MakerTest do
       assert [%User{name: "John", surname: "Doe", age: 42}, _] =
                Maker.make_many(User, UserFactory, 2, [:surname])
     end
+
+    test "make_many/4 returns distinct results" do
+      [first, second] = Maker.make_many(User, DistinctUserFactory, 2, [])
+      assert first != second
+    end
+
   end
 end

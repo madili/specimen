@@ -20,6 +20,16 @@ defmodule Specimen.Fixtures.Factories.UserFactory do
   end
 end
 
+defmodule Specimen.Fixtures.Factories.DistinctUserFactory do
+  use Specimen.Factory, User
+
+  def build(specimen) do
+    specimen
+    |> Specimen.include(:name, "John")
+    |> Specimen.include(:age, System.unique_integer([:positive, :monotonic]))
+  end
+end
+
 defmodule Specimen.Fixtures.Factories.SchemableUserFactory do
   use Specimen.Factory, SchemableUser
 
