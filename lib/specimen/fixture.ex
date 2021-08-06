@@ -38,6 +38,10 @@ defmodule Specimen.Fixture do
     DateTime.to_naive(make(:date_time))
   end
 
+  def make(type) do
+    raise "Unsupported type #{type}"
+  end
+
   def make_many(type, count)
       when is_atom(type)
       when is_postive_integer(count) do

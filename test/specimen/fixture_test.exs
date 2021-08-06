@@ -48,5 +48,11 @@ defmodule Specimen.FixtureTest do
       fixture = Fixture.make(:naive_date_time)
       assert %NaiveDateTime{} = fixture
     end
+
+    test "unsupported type throws exception" do
+      assert_raise RuntimeError, "Unsupported type foo", fn ->
+        Fixture.make(:foo)
+      end
+    end
   end
 end
