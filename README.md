@@ -64,6 +64,15 @@ end
 ```
 
 ```elixir
-user = User.make_one()
-users = User.make_many(10)
+user = User.Factory.make_one()
+users = User.Factory.make_many(10)
 ```
+
+## TODO List
+
+- [ ] Expose `create_one` and `create_many` implementations on factories
+- [ ] Add support for more Ecto types (UUID, embeds, etc...)
+- [ ] Allow configuration of Repo globally through application settings
+- [ ] Allow configuration of Repo for each factory individually
+- [ ] Allow extension of custom types through external implementations (specific domains)
+- [ ] See if we can enforce that a non-empty factory only builds items for the specified module 
