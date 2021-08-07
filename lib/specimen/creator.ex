@@ -3,6 +3,9 @@ defmodule Specimen.Creator do
 
   alias Specimen.Maker
 
+  @doc """
+  Creates one item as specified by the factory.
+  """
   def create_one(module, factory, repo, states) do
     module
     |> Maker.make_one(factory, states)
@@ -10,6 +13,9 @@ defmodule Specimen.Creator do
     |> factory.after_creating()
   end
 
+  @doc """
+  Creates many items as specified by the factory.
+  """
   def create_many(module, factory, count, repo, states) do
     entries =
       module

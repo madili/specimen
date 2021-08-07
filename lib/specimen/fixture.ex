@@ -1,5 +1,7 @@
 defmodule Specimen.Fixture do
-  @moduledoc false
+  @moduledoc """
+  Generates fixtures for Elixir basic types.
+  """
 
   @integer_threshold 60_000_000
   @binary_threshold 10
