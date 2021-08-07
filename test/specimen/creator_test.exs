@@ -3,46 +3,28 @@ defmodule Specimen.CreatorTest do
 
   doctest Specimen.Creator
 
-  import Ecto.Query
-
   alias Specimen.Creator
-
-  alias Specimen.Fixtures.Structs.SchemableUser
-  alias Specimen.Fixtures.Factories.SchemableUserFactory
-
+  alias UserFixture, as: User
+  alias UserFixtureFactory, as: Factory
   alias Specimen.TestRepo, as: Repo
 
-  describe "creator" do
-    test "create_one/3 persists exactly one built struct" do
-      assert %SchemableUser{
-               id: id,
-               __meta__: %Ecto.Schema.Metadata{state: :loaded, source: "users"}
-             } = Creator.create_one(SchemableUser, SchemableUserFactory, Repo, [:surname])
+  test "create_one/3 returns exactly one persisted struct" do
+    assert %User{id: id} = Creator.create_one(User, Factory, Repo, [:status])
+    assert %User{id: ^id, name: "Joe", lastname: "Schmoe", status: "active"} = Repo.get!(User, id)
+  end
 
-      assert %SchemableUser{id: ^id} = Repo.get!(SchemableUser, id)
-    end
+  test "create_one/3 invokes after_creating callback" do
+    user = Creator.create_one(User, Factory, Repo, [:status])
+    assert user.email == String.downcase("#{user.name}.#{user.lastname}@mail.com")
+  end
 
-    test "create_one/3 applies after_creating callback" do
-      user = Creator.create_one(SchemableUser, SchemableUserFactory, Repo, [:surname])
-      assert user.email == String.downcase("#{user.name}.#{user.surname}@mail.com")
-    end
+  test "create_many/4 returns the specified amount of structs persisted" do
+    assert [%User{id: id}] = Creator.create_many(User, Factory, 1, Repo, [:status])
+    assert %User{id: ^id, name: "Joe", lastname: "Schmoe", status: "active"} = Repo.get!(User, id)
+  end
 
-    test "create_many/4 persists exactly the specified amount of structs built" do
-      assert [%SchemableUser{__meta__: %Ecto.Schema.Metadata{state: :loaded, source: "users"}}, _] =
-               users =
-               Creator.create_many(SchemableUser, SchemableUserFactory, 2, Repo, [:surname])
-
-      assert Enum.all?(users, fn %{id: id} ->
-               match?(%SchemableUser{id: ^id}, Repo.get!(SchemableUser, id))
-             end)
-    end
-
-    test "create_many/4 applies after_creating callback" do
-      users = Creator.create_many(SchemableUser, SchemableUserFactory, 2, Repo, [:surname])
-
-      assert Enum.all?(users, fn user ->
-               user.email == String.downcase("#{user.name}.#{user.surname}@mail.com")
-             end)
-    end
+  test "create_many/4 applies after_creating callback" do
+    [user] = Creator.create_many(User, Factory, 1, Repo, [:status])
+    assert user.email == String.downcase("#{user.name}.#{user.lastname}@mail.com")
   end
 end

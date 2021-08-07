@@ -3,15 +3,15 @@ defmodule Specimen.HasFactoryTest do
 
   doctest Specimen.Maker
 
-  alias Specimen.Fixtures.Structs.{User, FactorableUser}
+  alias UserFixture, as: User
 
-  describe "has_factory" do
-    test "make_one/1" do
-      assert %User{} = FactorableUser.Factory.make_one()
+  describe "using Specimen.HasFactory" do
+    test "exposes a Factory.make_one/1 function inside the module" do
+      assert %User{} = User.Factory.make_one()
     end
 
-    test "make_many/2" do
-      assert [%User{}, _] = FactorableUser.Factory.make_many(2)
+    test "exposes a Factory.make_many/2 function inside the module" do
+      assert [%User{}, %User{}] = User.Factory.make_many(2)
     end
   end
 end

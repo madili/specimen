@@ -3,61 +3,65 @@ defmodule SpecimenTest do
 
   doctest Specimen
 
-  alias Specimen.Fixtures.Structs.{User, SchemableUser}
+  alias UserFixture, as: User
 
   describe "specimen" do
-    test "new/1" do
-      assert %Specimen{module: User} = Specimen.new(User)
+    test "new/1 creates a clean Specimen" do
+      specimen = Specimen.new(User)
+
+      assert %Specimen{module: User, struct: %User{}} = specimen
+      assert %User{name: "John", lastname: "Doe"} = Specimen.to_struct(specimen)
     end
 
-    test "fill/1" do
-      specimen =
-        SchemableUser
-        |> Specimen.new()
-        |> Specimen.fill()
-
-      assert %Specimen{funs: funs} = specimen
-      assert length(SchemableUser.__schema__(:fields)) == length(funs)
-      assert %SchemableUser{} = Specimen.to_struct(specimen)
-    end
-
-    test "exclude/2" do
-      specimen =
-        User
-        |> Specimen.new()
-        |> Specimen.exclude(:name)
-
-      assert %Specimen{excludes: [:name]} = specimen
-      assert %User{name: nil} = Specimen.to_struct(specimen)
-    end
-
-    test "include/2" do
+    test "include/2 adds a field without value" do
       specimen =
         User
         |> Specimen.new()
         |> Specimen.include(:name)
 
-      assert %Specimen{includes: [:name]} = specimen
-      assert %User{name: "Joseph"} = Specimen.to_struct(specimen)
-    end
-
-    test "include/3" do
-      specimen =
-        User
-        |> Specimen.new()
-        |> Specimen.include(:name, "John")
-
-      assert %Specimen{includes: [:name]} = specimen
+      assert %Specimen{includes: [:name], funs: []} = specimen
       assert %User{name: "John"} = Specimen.to_struct(specimen)
     end
 
-    test "transform/2" do
+    test "include/3 adds a field with value" do
       specimen =
         User
         |> Specimen.new()
-        |> Specimen.transform(&Map.put(&1, :name, "John"))
+        |> Specimen.include(:name, "Joe")
+        |> Specimen.include(:lastname, "Schmoe")
 
-      assert %User{name: "John"} = Specimen.to_struct(specimen)
+      assert %Specimen{includes: [:lastname, :name], funs: [_ | _]} = specimen
+      assert %User{name: "Joe", lastname: "Schmoe"} = Specimen.to_struct(specimen)
+    end
+
+    test "exclude/2 nilifies a field" do
+      specimen =
+        User
+        |> Specimen.new()
+        |> Specimen.exclude(:lastname)
+
+      assert %Specimen{excludes: [:lastname], funs: []} = specimen
+      assert %User{name: "John", lastname: nil} = Specimen.to_struct(specimen)
+    end
+
+    test "transform/2 changes a field" do
+      specimen =
+        User
+        |> Specimen.new()
+        |> Specimen.transform(&Map.put(&1, :name, "Joe"))
+
+      assert %Specimen{includes: [], excludes: [], funs: [_ | _]} = specimen
+      assert %User{name: "Joe", lastname: "Doe"} = Specimen.to_struct(specimen)
+    end
+
+    test "fill/1 adds random values to struct fields" do
+      specimen =
+        User
+        |> Specimen.new()
+        |> Specimen.fill()
+
+      assert %Specimen{includes: [_ | _], excludes: [], funs: [_ | _]} = specimen
+      assert %User{} = Specimen.to_struct(specimen)
     end
   end
 end

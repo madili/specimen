@@ -14,7 +14,7 @@ defmodule Specimen.Creator do
     entries =
       module
       |> Maker.make_many(factory, count, states)
-      |> Enum.map(&Map.drop(&1, [:__meta__, :__struct__]))
+      |> Enum.map(&Map.drop(&1, [:__meta__, :__struct__, :id]))
 
     {_, entries} = repo.insert_all(module, entries, returning: true)
 

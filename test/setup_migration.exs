@@ -4,9 +4,11 @@ defmodule Specimen.SetupMigration do
   def change do
     create table(:users) do
       add(:name, :string)
-      add(:surname, :string)
-      add(:age, :integer)
+      add(:lastname, :string)
+      add(:status, :string)
+      add(:password, :string)
       add(:email, :string)
+      add(:age, :integer)
     end
   end
 end
