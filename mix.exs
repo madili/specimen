@@ -29,7 +29,9 @@ defmodule Specimen.MixProject do
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
       {:uuid, "~> 1.1"},
-      {:ecto, "~> 3.6", only: :test}
+      {:ecto, "~> 3.6", only: :test},
+      {:ecto_sql, ">= 3.0.0", only: :test},
+      {:postgrex, ">= 0.0.0", only: :test}
     ]
   end
 end

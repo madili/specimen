@@ -16,6 +16,7 @@ defmodule Specimen.Fixtures.Structs.SchemableUser do
   schema "users" do
     field(:name, :string, default: "Joseph")
     field(:surname, :string)
+    field(:email, :string)
     field(:age, :integer)
   end
 end

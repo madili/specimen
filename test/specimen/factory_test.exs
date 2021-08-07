@@ -14,7 +14,7 @@ defmodule Specimen.FactoryTest do
 
     test "build/1 raises when using invalid module" do
       defmodule UnknownModule, do: defstruct [:name]
-            
+
       specimen = Specimen.new(UnknownModule)
 
       assert_raise RuntimeError, "This factory can't be used to build Specimen.FactoryTest.UnknownModule", fn ->
@@ -32,9 +32,9 @@ defmodule Specimen.FactoryTest do
       assert specimen == DefaultUserFactory.after_making(specimen)
     end
 
-    test "after_creating/2 without configuration returns an unmodified struct" do
+    test "after_creating/1 without configuration returns an unmodified struct" do
       struct = %User{}
-      assert struct == DefaultUserFactory.after_making(struct)
+      assert struct == DefaultUserFactory.after_creating(struct)
     end
 
     test "make_one/0 returns transforms from build" do

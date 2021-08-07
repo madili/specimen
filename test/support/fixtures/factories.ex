@@ -37,8 +37,7 @@ defmodule Specimen.Fixtures.Factories.SchemableUserFactory do
     Specimen.fill(specimen)
   end
 
-  # TODO: Check hook after inserting when we are integrating with ecto
-  # def after_creating(%User{name: name, surname: surname} = user) do
-  #   %{user | email: String.downcase("#{name}.#{surname}@mail.com")}
-  # end
+  def after_creating(%SchemableUser{name: name, surname: surname} = user) do
+    %{user | email: String.downcase("#{name}.#{surname}@mail.com")}
+  end
 end
