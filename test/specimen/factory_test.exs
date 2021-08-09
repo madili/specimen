@@ -3,6 +3,7 @@ defmodule Specimen.FactoryTest do
 
   alias UserFixture, as: User
   alias UserFixtureFactory, as: Factory
+  alias Specimen.TestRepo, as: Repo
 
   defmodule OtherModule, do: defstruct([:name])
   defmodule EmptyFactory, do: use(Specimen.Factory, User)
@@ -22,5 +23,15 @@ defmodule Specimen.FactoryTest do
   test "make_many/2 is exposed in the factory" do
     assert [%User{name: "Joe", lastname: "Schmoe", status: "active"}] =
              Factory.make_many(1, [:status])
+  end
+
+  test "create_one/2 is exposed in the factory" do
+    assert %User{id: id} = Factory.create_one(Repo, [:status])
+    assert %User{id: ^id, name: "Joe", lastname: "Schmoe", status: "active"} = Repo.get!(User, id)
+  end
+
+  test "create_many/3 is exposed in the factory" do
+    assert [%User{id: id}] = Factory.create_many(1, Repo, [:status])
+    assert %User{id: ^id, name: "Joe", lastname: "Schmoe", status: "active"} = Repo.get!(User, id)
   end
 end

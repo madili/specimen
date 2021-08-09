@@ -22,6 +22,12 @@ defmodule Specimen.Factory do
       def make_many(count, states \\ []),
         do: Specimen.Maker.make_many(@module, @factory, count, states)
 
+      def create_one(repo, states \\ []),
+        do: Specimen.Creator.create_one(@module, @factory, repo, states)
+
+      def create_many(count, repo, states \\ []),
+        do: Specimen.Creator.create_many(@module, @factory, count, repo, states)
+
       def build(%Specimen{module: module}) when module != unquote(module) do
         raise "This factory can't be used to build #{inspect(module)}"
       end

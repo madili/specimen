@@ -70,7 +70,7 @@ users = User.Factory.make_many(10)
 
 ## TODO List
 
-- [ ] Expose `create_one` and `create_many` implementations on factories
+- [x] Expose `create_one` and `create_many` implementations on factories
 - [ ] Add support for more Ecto types (UUID, embeds, etc...)
 - [ ] Allow configuration of Repo globally through application settings
 - [ ] Allow configuration of Repo for each factory individually
