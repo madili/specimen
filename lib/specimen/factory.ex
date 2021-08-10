@@ -8,7 +8,7 @@ defmodule Specimen.Factory do
   - `:repo` - The repository to store the structs in.
   - `:prefix` - The database prefix to use when inserting structs.
 
-  This options can also be overriden by passing them as arguments to the functions that support it.
+  > These options can also be overriden by passing them as arguments to the functions that support it.
 
   ## Examples
 
