@@ -1,5 +1,5 @@
 defmodule UserFixtureFactory do
-  use Specimen.Factory, UserFixture
+  use Specimen.Factory, module: UserFixture
 
   def build(specimen) do
     specimen

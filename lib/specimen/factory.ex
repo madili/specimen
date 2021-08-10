@@ -1,5 +1,27 @@
 defmodule Specimen.Factory do
-  @moduledoc false
+  @moduledoc """
+  Defines a factory for creating structs of the specified module.
+
+  ## Options
+
+  - `:module` - The module to create structs of.
+  - `:repo` - The repository to store the structs in.
+  - `:prefix` - The database prefix to use when inserting structs.
+
+  This options can also be overriden by passing them as arguments to the functions that support it.
+
+  ## Examples
+
+  ```
+  defmodule UserFactory do
+    use Specimen.Factory,
+      module: User,
+      repo: Repo,
+      prefix: "prefix"
+  end
+  ```
+
+  """
 
   @callback build(Specimen.t()) :: Specimen.t()
 
@@ -9,24 +31,42 @@ defmodule Specimen.Factory do
 
   @callback after_creating(struct()) :: struct()
 
-  defmacro __using__(module) do
-    quote do
+  defmacro __using__(opts) when is_list(opts) do
+    quote bind_quoted: [opts: opts] do
       @behaviour Specimen.Factory
 
-      @module unquote(module)
+      {module, opts} = Keyword.pop!(opts, :module)
+      {repo, opts} = Keyword.pop(opts, :repo)
+      {prefix, _opts} = Keyword.pop(opts, :prefix)
+
       @factory __MODULE__
+      @factory_module module
+      @factory_repo repo
+      @factory_prefix prefix
+
+      def __info__,
+        do: [
+          factory: @factory,
+          factory_module: @factory_module,
+          factory_repo: @factory_repo,
+          factory_prefix: @factory_prefix
+        ]
 
       def make_one(opts \\ []),
-        do: Specimen.Maker.make_one(@module, @factory, opts)
+        do: Specimen.Maker.make_one(@factory_module, @factory, opts)
 
       def make_many(count, opts \\ []),
-        do: Specimen.Maker.make_many(@module, @factory, count, opts)
+        do: Specimen.Maker.make_many(@factory_module, @factory, count, opts)
 
-      def create_one(opts \\ []),
-        do: Specimen.Creator.create_one(@module, @factory, opts)
+      def create_one(opts \\ []) do
+        opts = Keyword.merge([repo: @factory_repo, prefix: @factory_prefix], opts)
+        Specimen.Creator.create_one(@factory_module, @factory, opts)
+      end
 
-      def create_many(count, opts \\ []),
-        do: Specimen.Creator.create_many(@module, @factory, count, opts)
+      def create_many(count, opts \\ []) do
+        opts = Keyword.merge([repo: @factory_repo, prefix: @factory_prefix], opts)
+        Specimen.Creator.create_many(@factory_module, @factory, count, opts)
+      end
 
       def build(%Specimen{module: module}) when module != unquote(module) do
         raise "This factory can't be used to build #{inspect(module)}"
