@@ -1,14 +1,32 @@
 defmodule Specimen.Maker do
   @moduledoc false
 
-  def make_one(module, factory, states) do
+  @doc """
+  Makes one item as specified by the factory.
+
+  ## Options
+
+  - `:states` - A list of states to be applied to the item.
+  """
+  def make_one(module, factory, opts \\ []) do
+    {states, _opts} = Keyword.pop(opts, :states, [])
+
     module
     |> Specimen.new()
     |> generate(factory, 1, states)
     |> List.first()
   end
 
-  def make_many(module, factory, count, states) do
+  @doc """
+  Makes many items as specified by the factory.
+
+  ## Options
+
+  - `:states` - A list of states to be applied to the item.
+  """
+  def make_many(module, factory, count, opts \\ []) do
+    {states, _opts} = Keyword.pop(opts, :states, [])
+
     module
     |> Specimen.new()
     |> generate(factory, count, states)
