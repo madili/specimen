@@ -75,4 +75,6 @@ users = User.Factory.make_many(10)
 - [ ] Allow configuration of Repo globally through application settings
 - [x] Allow configuration of Repo for each factory individually
 - [ ] Allow extension of custom types through external implementations (specific domains)
-- [ ] See if we can enforce that a non-empty factory only builds items for the specified module 
+- [ ] See if we can enforce that a non-empty factory only builds items for the specified module
+- [ ] Take in consideration excluded and included fields before using `Specimen.fill/1`
+ 
