@@ -34,6 +34,19 @@ defmodule SpecimenTest do
       assert %User{name: "Joe", lastname: "Schmoe"} = Specimen.to_struct(specimen)
     end
 
+    test "vary/3 adds a field with a random value from a given list" do
+      names = ~w"Joe Jerry James"
+
+      specimen =
+        User
+        |> Specimen.new()
+        |> Specimen.vary(:name, names)
+
+      assert %Specimen{includes: [:name], funs: [_]} = specimen
+      assert %User{name: name} = Specimen.to_struct(specimen)
+      assert name in names
+    end
+
     test "exclude/2 nilifies a field" do
       specimen =
         User

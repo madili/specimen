@@ -42,6 +42,15 @@ defmodule Specimen do
   end
 
   @doc """
+  Includes the field in the list of fields to be generated randomly from the given list of values.
+  """
+  def vary(%Specimen{} = specimen, field, list) do
+    specimen
+    |> include(field)
+    |> include(field, Enum.random(list))
+  end
+
+  @doc """
   Excludes the field from the list of fields to be generated.
   Excluded fields will be nilified in the generated struct.
   """
