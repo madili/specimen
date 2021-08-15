@@ -23,13 +23,24 @@ defmodule Specimen.Factory do
 
   """
 
-  @callback build(Specimen.t(), context :: keyword() | map()) :: Specimen.t()
+  @type context :: map() | keyword()
+  @type option :: {:module, module()} | {:repo, Ecto.Repo.t()} | {:prefix, binary()} | {:context, context()}
 
-  @callback state(atom(), struct(), context :: keyword() | map()) :: struct()
+  @callback make_one(opts :: [option]) :: struct()
 
-  @callback after_making(struct(), context :: keyword() | map()) :: struct()
+  @callback make_many(count :: integer(), opts :: [option]) :: [struct()]
 
-  @callback after_creating(struct(), context :: keyword() | map()) :: struct()
+  @callback create_one(opts :: [option]) :: struct()
+
+  @callback create_many(count :: integer(), opts :: [option]) :: [struct()]
+
+  @callback build(Specimen.t(), context :: context()) :: Specimen.t()
+
+  @callback state(atom(), struct(), context :: context()) :: struct()
+
+  @callback after_making(struct(), context :: context()) :: struct()
+
+  @callback after_creating(struct(), context :: context()) :: struct()
 
   defmacro __using__(opts) when is_list(opts) do
     quote bind_quoted: [opts: opts] do
