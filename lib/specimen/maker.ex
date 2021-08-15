@@ -36,13 +36,15 @@ defmodule Specimen.Maker do
     |> generate(factory, count, states)
   end
 
-  defp generate(%Specimen{context: context} = specimen, factory, count, states) do
+  defp generate(%Specimen{} = specimen, factory, count, states) do
     generator = fn ->
-      specimen
-      |> factory.build()
-      |> apply_states(factory, states)
-      |> Specimen.to_struct()
-      |> factory.after_making(context)
+      {struct, context} =
+        specimen
+        |> factory.build()
+        |> apply_states(factory, states)
+        |> Specimen.to_struct()
+
+      factory.after_making(struct, context)
     end
 
     generator

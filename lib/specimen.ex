@@ -15,7 +15,7 @@ defmodule Specimen do
   Creates a new Specimen.
   """
   def new(module, context \\ %{}) do
-    %Specimen{module: module, struct: struct!(module), context: context}
+    %Specimen{module: module, struct: struct!(module), context: Enum.into(context, %{})}
   end
 
   @doc """
@@ -68,20 +68,40 @@ defmodule Specimen do
   @doc """
   Converts the Specimen into a struct.
   """
-  def to_struct(%Specimen{module: module, struct: struct, funs: funs} = specimen) do
+  def to_struct(%Specimen{module: module} = specimen) do
     %{includes: includes, excludes: excludes} = specimen
 
-    fields =
-      funs
-      |> Enum.reverse()
-      |> Enum.reduce(struct, fn fun, struct -> apply(fun, [struct]) end)
-      |> Map.from_struct()
-      |> Map.new(&map_struct_field(&1, includes, excludes))
+    {struct, context} = transform(specimen)
 
-    struct!(module, fields)
+    fields =
+      struct
+      |> Map.from_struct()
+      |> Map.new(&map_field(&1, includes, excludes))
+
+    {struct!(module, fields), context}
   end
 
-  defp map_struct_field({key, value}, includes, excludes) do
+  defp transform(%{funs: funs, struct: struct, context: context}) do
+    {struct, context} =
+      funs
+      |> Enum.reverse()
+      |> Enum.reduce({struct, context}, &invoke_transform/2)
+
+    {struct, context}
+  end
+
+  defp invoke_transform(function, {struct, context}) do
+    case apply(function, [struct]) do
+      {struct, state_context} ->
+        state_context = Enum.into(state_context, %{})
+        {struct, Map.merge(context, state_context)}
+
+      struct ->
+        {struct, context}
+    end
+  end
+
+  defp map_field({key, value}, includes, excludes) do
     # TODO: Check if this is the best implementation for includes/ excludes.
     # Questions to ask:
     # - Do we want to consider both includes and excludes?

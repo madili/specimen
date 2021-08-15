@@ -10,7 +10,7 @@ defmodule SpecimenTest do
       specimen = Specimen.new(User)
 
       assert %Specimen{module: User, struct: %User{}} = specimen
-      assert %User{name: "John", lastname: "Doe"} = Specimen.to_struct(specimen)
+      assert {%User{name: "John", lastname: "Doe"}, _context} = Specimen.to_struct(specimen)
     end
 
     test "include/2 adds a field without value" do
@@ -20,7 +20,7 @@ defmodule SpecimenTest do
         |> Specimen.include(:name)
 
       assert %Specimen{includes: [:name], funs: []} = specimen
-      assert %User{name: "John"} = Specimen.to_struct(specimen)
+      assert {%User{name: "John"}, _context} = Specimen.to_struct(specimen)
     end
 
     test "include/3 adds a field with value" do
@@ -31,7 +31,7 @@ defmodule SpecimenTest do
         |> Specimen.include(:lastname, "Schmoe")
 
       assert %Specimen{includes: [:lastname, :name], funs: [_ | _]} = specimen
-      assert %User{name: "Joe", lastname: "Schmoe"} = Specimen.to_struct(specimen)
+      assert {%User{name: "Joe", lastname: "Schmoe"}, _context} = Specimen.to_struct(specimen)
     end
 
     test "vary/3 adds a field with a random value from a given list" do
@@ -43,7 +43,7 @@ defmodule SpecimenTest do
         |> Specimen.vary(:name, names)
 
       assert %Specimen{includes: [:name], funs: [_]} = specimen
-      assert %User{name: name} = Specimen.to_struct(specimen)
+      assert {%User{name: name}, _context} = Specimen.to_struct(specimen)
       assert name in names
     end
 
@@ -54,7 +54,7 @@ defmodule SpecimenTest do
         |> Specimen.exclude(:lastname)
 
       assert %Specimen{excludes: [:lastname], funs: []} = specimen
-      assert %User{name: "John", lastname: nil} = Specimen.to_struct(specimen)
+      assert {%User{name: "John", lastname: nil}, _context} = Specimen.to_struct(specimen)
     end
 
     test "transform/2 changes a field" do
@@ -64,7 +64,7 @@ defmodule SpecimenTest do
         |> Specimen.transform(&Map.put(&1, :name, "Joe"))
 
       assert %Specimen{includes: [], excludes: [], funs: [_ | _]} = specimen
-      assert %User{name: "Joe", lastname: "Doe"} = Specimen.to_struct(specimen)
+      assert {%User{name: "Joe", lastname: "Doe"}, _context} = Specimen.to_struct(specimen)
     end
 
     test "fill/1 adds random values to struct fields" do
@@ -74,7 +74,7 @@ defmodule SpecimenTest do
         |> Specimen.fill()
 
       assert %Specimen{includes: [_ | _], excludes: [], funs: [_ | _]} = specimen
-      assert %User{} = Specimen.to_struct(specimen)
+      assert {%User{}, _context} = Specimen.to_struct(specimen)
     end
   end
 end
