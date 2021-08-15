@@ -34,7 +34,7 @@ defmodule Specimen.Factory do
 
   @callback create_many(count :: integer(), opts :: [option]) :: [struct()]
 
-  @callback build(Specimen.t(), context :: context()) :: Specimen.t()
+  @callback build(Specimen.t()) :: Specimen.t()
 
   @callback state(atom(), struct(), context :: context()) :: struct()
 
@@ -79,11 +79,11 @@ defmodule Specimen.Factory do
         Specimen.Creator.create_many(@factory_module, @factory, count, opts)
       end
 
-      def build(%Specimen{module: module}, _context) when module != unquote(module) do
+      def build(%Specimen{module: module, context: context}) when module != unquote(module) do
         raise "This factory can't be used to build #{inspect(module)}"
       end
 
-      def build(specimen, _context), do: specimen
+      def build(specimen), do: specimen
 
       def state(_state, struct, _context), do: struct
 
@@ -91,7 +91,7 @@ defmodule Specimen.Factory do
 
       def after_creating(struct, _context), do: struct
 
-      defoverridable build: 2, state: 3, after_making: 2, after_creating: 2
+      defoverridable build: 1, state: 3, after_making: 2, after_creating: 2
     end
   end
 end

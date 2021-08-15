@@ -14,8 +14,8 @@ defmodule Specimen.Maker do
     {context, _opts} = Keyword.pop(opts, :context, [])
 
     module
-    |> Specimen.new()
-    |> generate(factory, 1, states, context)
+    |> Specimen.new(context)
+    |> generate(factory, 1, states)
     |> List.first()
   end
 
@@ -32,15 +32,15 @@ defmodule Specimen.Maker do
     {context, _opts} = Keyword.pop(opts, :context, [])
 
     module
-    |> Specimen.new()
-    |> generate(factory, count, states, context)
+    |> Specimen.new(context)
+    |> generate(factory, count, states)
   end
 
-  defp generate(%Specimen{} = specimen, factory, count, states, context) do
+  defp generate(%Specimen{context: context} = specimen, factory, count, states) do
     generator = fn ->
       specimen
-      |> factory.build(context)
-      |> apply_states(factory, states, context)
+      |> factory.build()
+      |> apply_states(factory, states)
       |> Specimen.to_struct()
       |> factory.after_making(context)
     end
@@ -50,7 +50,7 @@ defmodule Specimen.Maker do
     |> Enum.take(count)
   end
 
-  defp apply_states(specimen, factory, states, context) do
+  defp apply_states(%{context: context} = specimen, factory, states) do
     Enum.reduce(states, specimen, fn state, specimen ->
       Specimen.transform(specimen, &apply(factory, :state, [state, &1, context]))
     end)

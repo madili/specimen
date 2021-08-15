@@ -1,7 +1,7 @@
 defmodule UserFixtureFactory do
   use Specimen.Factory, module: UserFixture
 
-  def build(specimen, context) do
+  def build(%{context: context} = specimen) do
     specimen
     |> Specimen.include(:id)
     |> Specimen.include(:name, context[:name] || "Joe")

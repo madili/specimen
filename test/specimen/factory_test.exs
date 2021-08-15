@@ -13,7 +13,7 @@ defmodule Specimen.FactoryTest do
 
     message = "This factory can't be used to build Specimen.FactoryTest.OtherModule"
 
-    assert_raise RuntimeError, message, fn -> EmptyFactory.build(specimen, []) end
+    assert_raise RuntimeError, message, fn -> EmptyFactory.build(specimen) end
   end
 
   test "make_one/1 is exposed in the factory" do

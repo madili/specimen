@@ -9,13 +9,13 @@ defmodule Specimen do
 
   @type t :: %__MODULE__{}
 
-  defstruct module: nil, struct: nil, funs: [], includes: [], excludes: []
+  defstruct module: nil, struct: nil, funs: [], includes: [], excludes: [], context: %{}
 
   @doc """
   Creates a new Specimen.
   """
-  def new(module) do
-    %Specimen{module: module, struct: struct!(module)}
+  def new(module, context \\ %{}) do
+    %Specimen{module: module, struct: struct!(module), context: context}
   end
 
   @doc """
