@@ -23,13 +23,13 @@ defmodule Specimen.Factory do
 
   """
 
-  @callback build(Specimen.t()) :: Specimen.t()
+  @callback build(Specimen.t(), context :: keyword() | map()) :: Specimen.t()
 
-  @callback state(atom(), struct()) :: struct()
+  @callback state(atom(), struct(), context :: keyword() | map()) :: struct()
 
-  @callback after_making(struct()) :: struct()
+  @callback after_making(struct(), context :: keyword() | map()) :: struct()
 
-  @callback after_creating(struct()) :: struct()
+  @callback after_creating(struct(), context :: keyword() | map()) :: struct()
 
   defmacro __using__(opts) when is_list(opts) do
     quote bind_quoted: [opts: opts] do
@@ -68,19 +68,19 @@ defmodule Specimen.Factory do
         Specimen.Creator.create_many(@factory_module, @factory, count, opts)
       end
 
-      def build(%Specimen{module: module}) when module != unquote(module) do
+      def build(%Specimen{module: module}, _context) when module != unquote(module) do
         raise "This factory can't be used to build #{inspect(module)}"
       end
 
-      def build(specimen), do: specimen
+      def build(specimen, _context), do: specimen
 
-      def state(_state, struct), do: struct
+      def state(_state, struct, _context), do: struct
 
-      def after_making(struct), do: struct
+      def after_making(struct, _context), do: struct
 
-      def after_creating(struct), do: struct
+      def after_creating(struct, _context), do: struct
 
-      defoverridable build: 1, state: 2, after_making: 1, after_creating: 1
+      defoverridable build: 2, state: 3, after_making: 2, after_creating: 2
     end
   end
 end

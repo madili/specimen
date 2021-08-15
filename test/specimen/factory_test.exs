@@ -8,12 +8,12 @@ defmodule Specimen.FactoryTest do
   defmodule OtherModule, do: defstruct([:name])
   defmodule EmptyFactory, do: use(Specimen.Factory, module: User)
 
-  test "build/1 on an empty factory raises when using a different module" do
+  test "build/2 on an empty factory raises when using a different module" do
     specimen = Specimen.new(OtherModule)
 
     message = "This factory can't be used to build Specimen.FactoryTest.OtherModule"
 
-    assert_raise RuntimeError, message, fn -> EmptyFactory.build(specimen) end
+    assert_raise RuntimeError, message, fn -> EmptyFactory.build(specimen, []) end
   end
 
   test "make_one/1 is exposed in the factory" do
@@ -70,5 +70,21 @@ defmodule Specimen.FactoryTest do
     assert_raise Postgrex.Error, ~r/ERROR 42P01 \(undefined_table\) relation "bar.users"/, fn ->
       UserFactoryWithOptions.create_many(1, prefix: "bar", states: [:status])
     end
+  end
+
+  test "context option is properly passed down to factory functions" do
+    context = [name: "Jane", status: "inactive", age: 42, email: "jane@mail.com"]
+
+    assert %User{name: "Jane", status: "inactive", age: 42} =
+             Factory.make_one(context: context, states: [:status])
+
+    assert [%User{name: "Jane", status: "inactive", age: 42}] =
+             Factory.make_many(1, context: context, states: [:status])
+
+    assert %User{email: "jane@mail.com"} =
+             Factory.create_one(context: context, repo: Repo, states: [:status])
+
+    assert [%User{email: "jane@mail.com"}] =
+             Factory.create_many(1, context: context, repo: Repo, states: [:status])
   end
 end
