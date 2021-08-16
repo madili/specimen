@@ -77,4 +77,10 @@ end
 - [ ] Allow extension of custom types through external implementations (specific domains)
 - [ ] See if we can enforce that a non-empty factory only builds items for the specified module
 - [ ] Take in consideration excluded and included fields before using `Specimen.fill/1`
- 
+- [ ] Allow the configuration of default states to call per factory
+- [x] Allow passing attributes / context through function calls (use-case: override default factory definitions)
+- [x] Return creation context along with created items (use-case: access values created by inner factory definitions)
+- [ ] Add support to sequences (sequencing values)
+- [x] Add support to vary from a given list of values (use-case: generate distinct values from a given list, eg: user roles)
+- [ ] Rename `create_many` to `create_all` for performance usages and make `create_many` rely on `create_one` the same way `make_many` relies on `make_one`
+- [ ] Allow user to pass a function to patch structs into entries so `create_all` can use `Repo.insert_all` properly (right now we just remove some fields and hope everything works, but each user might have a different need).
