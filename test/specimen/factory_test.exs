@@ -17,32 +17,36 @@ defmodule Specimen.FactoryTest do
   end
 
   test "make_one/1 is exposed in the factory" do
-    assert %User{name: "Joe", lastname: "Schmoe", status: "active"} =
-             Factory.make_one(states: [:status])
+    assert {user, _context} = Factory.make_one(states: [:status])
+    assert %User{name: "Joe", lastname: "Schmoe", status: "active"} = user
   end
 
   test "make_many/2 is exposed in the factory" do
-    assert [%User{name: "Joe", lastname: "Schmoe", status: "active"}] =
-             Factory.make_many(1, states: [:status])
+    assert {[user], _context} = Factory.make_many(1, states: [:status])
+    assert %User{name: "Joe", lastname: "Schmoe", status: "active"} = user
   end
 
   test "create_one/1 is exposed in the factory" do
-    assert %User{id: id} = Factory.create_one(repo: Repo, states: [:status])
+    assert {user, _context} = Factory.create_one(repo: Repo, states: [:status])
+    assert %User{id: id} = user
     assert %User{id: ^id, name: "Joe", lastname: "Schmoe", status: "active"} = Repo.get!(User, id)
   end
 
   test "create_many/2 is exposed in the factory" do
-    assert [%User{id: id}] = Factory.create_many(1, repo: Repo, states: [:status])
+    assert {[user], _context} = Factory.create_many(1, repo: Repo, states: [:status])
+    assert %User{id: id} = user
     assert %User{id: ^id, name: "Joe", lastname: "Schmoe", status: "active"} = Repo.get!(User, id)
   end
 
   test "factory accepts repo configuration" do
     defmodule UserFactoryWithRepoOption, do: use(Specimen.Factory, module: User, repo: Repo)
 
-    assert %User{id: id} = UserFactoryWithRepoOption.create_one(states: [:status])
+    assert {user, _context} = UserFactoryWithRepoOption.create_one(states: [:status])
+    assert %User{id: id} = user
     assert %User{id: ^id} = Repo.get!(User, id)
 
-    assert [%User{}] = UserFactoryWithRepoOption.create_many(1, states: [:status])
+    assert {[user], _context} = UserFactoryWithRepoOption.create_many(1, states: [:status])
+    assert %User{} = user
     assert %User{id: ^id} = Repo.get!(User, id)
   end
 
@@ -75,16 +79,26 @@ defmodule Specimen.FactoryTest do
   test "context option is properly passed down to factory functions" do
     context = [name: "Jane", status: "inactive", age: 42, email: "jane@mail.com"]
 
-    assert %User{name: "Jane", status: "inactive", age: 42} =
-             Factory.make_one(context: context, states: [:status])
+    assert {user, _context} = Factory.make_one(context: context, states: [:status])
+    assert %User{name: "Jane", status: "inactive", age: 42} = user
 
-    assert [%User{name: "Jane", status: "inactive", age: 42}] =
-             Factory.make_many(1, context: context, states: [:status])
+    assert {[user], _context} = Factory.make_many(1, context: context, states: [:status])
+    assert %User{name: "Jane", status: "inactive", age: 42} = user
 
-    assert %User{email: "jane@mail.com"} =
-             Factory.create_one(context: context, repo: Repo, states: [:status])
+    assert {user, _context} = Factory.create_one(context: context, repo: Repo, states: [:status])
+    assert %User{email: "jane@mail.com"} = user
 
-    assert [%User{email: "jane@mail.com"}] =
+    assert {[user], _context} =
              Factory.create_many(1, context: context, repo: Repo, states: [:status])
+
+    assert %User{email: "jane@mail.com"} = user
+  end
+
+  test "factory exposes build context from specimen context" do
+    assert {user, %{manual_sequence: true}} = Factory.make_one(context: [id: 1], states: [:id])
+    assert %User{id: 1} = user
+
+    assert {[user], [%{manual_sequence: true}]} = Factory.make_many(1, context: [id: 2], states: [:id])
+    assert %User{id: 2} = user
   end
 end

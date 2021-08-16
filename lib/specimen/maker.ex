@@ -13,10 +13,12 @@ defmodule Specimen.Maker do
     {states, opts} = Keyword.pop(opts, :states, [])
     {context, _opts} = Keyword.pop(opts, :context, [])
 
-    module
-    |> Specimen.new(context)
-    |> generate(factory, 1, states)
-    |> List.first()
+    {[item], [context]} =
+      module
+      |> Specimen.new(context)
+      |> generate(factory, 1, states)
+
+    {item, context}
   end
 
   @doc """
@@ -44,12 +46,17 @@ defmodule Specimen.Maker do
         |> apply_states(factory, states)
         |> Specimen.to_struct()
 
-      factory.after_making(struct, context)
+      struct = factory.after_making(struct, context)
+
+      {struct, context}
     end
 
     generator
     |> Stream.repeatedly()
     |> Enum.take(count)
+    |> Enum.reduce({[], []}, fn {struct, context}, {structs, contexts} ->
+      {[struct | structs], [context | contexts]}
+    end)
   end
 
   defp apply_states(%{context: context} = specimen, factory, states) do

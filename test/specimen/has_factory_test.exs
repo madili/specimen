@@ -7,11 +7,13 @@ defmodule Specimen.HasFactoryTest do
 
   describe "using Specimen.HasFactory" do
     test "exposes a Factory.make_one/1 function inside the module" do
-      assert %User{} = User.Factory.make_one()
+      assert {user, _context} = User.Factory.make_one()
+      assert %User{} = user
     end
 
     test "exposes a Factory.make_many/2 function inside the module" do
-      assert [%User{}, %User{}] = User.Factory.make_many(2)
+      assert {users, _context} = User.Factory.make_many(2)
+      assert [%User{}, %User{}] = users
     end
   end
 end

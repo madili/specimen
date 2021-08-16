@@ -8,17 +8,17 @@ defmodule Specimen.MakerTest do
   alias UserFixtureFactory, as: Factory
 
   test "make_one/3 returns exactly one built struct" do
-    assert %User{name: "Joe", lastname: "Schmoe", status: "active"} =
-             Maker.make_one(User, Factory, states: [:status])
+    assert {user, _context} = Maker.make_one(User, Factory, states: [:status])
+    assert %User{name: "Joe", lastname: "Schmoe", status: "active"} = user
   end
 
   test "make_many/4 returns the specified amount of structs built" do
-    assert [%User{name: "Joe", lastname: "Schmoe", status: "active"}] =
-             Maker.make_many(User, Factory, 1, states: [:status])
+    assert {[user], _context} = Maker.make_many(User, Factory, 1, states: [:status])
+    assert %User{name: "Joe", lastname: "Schmoe", status: "active"} = user
   end
 
   test "make_many/4 returns distinct results" do
-    [first, second] = Maker.make_many(User, Factory, 2)
+    assert {[first, second], _context} = Maker.make_many(User, Factory, 2)
     assert first != second
   end
 end

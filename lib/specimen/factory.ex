@@ -24,19 +24,24 @@ defmodule Specimen.Factory do
   """
 
   @type context :: map() | keyword()
-  @type option :: {:module, module()} | {:repo, Ecto.Repo.t()} | {:prefix, binary()} | {:context, context()}
 
-  @callback make_one(opts :: [option]) :: struct()
+  @type option ::
+          {:module, module()}
+          | {:repo, Ecto.Repo.t()}
+          | {:prefix, binary()}
+          | {:context, context()}
 
-  @callback make_many(count :: integer(), opts :: [option]) :: [struct()]
+  @callback make_one(opts :: [option]) :: {struct(), context()}
 
-  @callback create_one(opts :: [option]) :: struct()
+  @callback make_many(count :: integer(), opts :: [option]) :: {[struct()], [context()]}
 
-  @callback create_many(count :: integer(), opts :: [option]) :: [struct()]
+  @callback create_one(opts :: [option]) :: {struct(), context()}
+
+  @callback create_many(count :: integer(), opts :: [option]) :: {[struct()], [context()]}
 
   @callback build(Specimen.t()) :: Specimen.t()
 
-  @callback state(atom(), struct(), context :: context()) :: struct()
+  @callback state(atom(), struct(), context :: context()) :: struct() | {struct(), context()}
 
   @callback after_making(struct(), context :: context()) :: struct()
 
@@ -63,11 +68,13 @@ defmodule Specimen.Factory do
           factory_prefix: @factory_prefix
         ]
 
-      def make_one(opts \\ []),
-        do: Specimen.Maker.make_one(@factory_module, @factory, opts)
+      def make_one(opts \\ []) do
+        Specimen.Maker.make_one(@factory_module, @factory, opts)
+      end
 
-      def make_many(count, opts \\ []),
-        do: Specimen.Maker.make_many(@factory_module, @factory, count, opts)
+      def make_many(count, opts \\ []) do
+        Specimen.Maker.make_many(@factory_module, @factory, count, opts)
+      end
 
       def create_one(opts \\ []) do
         opts = Keyword.merge([repo: @factory_repo, prefix: @factory_prefix], opts)

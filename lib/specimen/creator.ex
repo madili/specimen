@@ -19,10 +19,14 @@ defmodule Specimen.Creator do
     {states, opts} = Keyword.pop(opts, :states, [])
     {context, _opts} = Keyword.pop(opts, :context, [])
 
-    module
-    |> Maker.make_one(factory, states: states, context: context)
-    |> repo.insert!(prefix: prefix, returning: true)
-    |> factory.after_creating(context)
+    {struct, context} = Maker.make_one(module, factory, states: states, context: context)
+
+    struct =
+      struct
+      |> repo.insert!(prefix: prefix, returning: true)
+      |> factory.after_creating(context)
+
+    {struct, context}
   end
 
   @doc """
@@ -41,13 +45,18 @@ defmodule Specimen.Creator do
     {states, opts} = Keyword.pop(opts, :states, [])
     {context, _opts} = Keyword.pop(opts, :context, [])
 
-    entries =
-      module
-      |> Maker.make_many(factory, count, states: states, context: context)
-      |> Enum.map(&Map.drop(&1, [:__meta__, :__struct__, :id]))
+    {structs, contexts} =
+      Maker.make_many(module, factory, count, states: states, context: context)
+
+    entries = Enum.map(structs, &Map.drop(&1, [:__meta__, :__struct__, :id]))
 
     {_, entries} = repo.insert_all(module, entries, prefix: prefix, returning: true)
 
-    Enum.map(entries, &factory.after_creating(&1, context))
+    entries =
+      entries
+      |> Enum.zip(contexts)
+      |> Enum.map(fn {entry, context} -> factory.after_creating(entry, context) end)
+
+    {entries, contexts}
   end
 end

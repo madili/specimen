@@ -13,6 +13,10 @@ defmodule UserFixtureFactory do
     %{user | status: context[:status] || "active"}
   end
 
+  def state(:id, %UserFixture{} = user, context) do
+    {%{user | id: context[:id]}, manual_sequence: true}
+  end
+
   def after_making(%UserFixture{} = user, context) do
     %{user | age: context[:age] || System.unique_integer([:positive, :monotonic])}
   end

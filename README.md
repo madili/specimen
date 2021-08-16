@@ -45,13 +45,13 @@ And then:
 
 ```elixir
 # Make just one user
-%User{} = UserFactory.make_one()
+{%User{}, _context} = UserFactory.make_one()
 
 # Make the specified amount of users
-users = UserFactory.make_many(10)
+{users, _contexts} = UserFactory.make_many(10)
 
 # Make users by including specific states
-%User{surname: "Doe"} = UserFactory.make_one([:surname])
+{%User{surname: "Doe"}, _context} = UserFactory.make_one([:surname])
 ```
 
 Call it directly from your struct/ schema modules:
@@ -64,8 +64,8 @@ end
 ```
 
 ```elixir
-user = User.Factory.make_one()
-users = User.Factory.make_many(10)
+{user, _} = User.Factory.make_one()
+{users, _} = User.Factory.make_many(10)
 ```
 
 ## TODO List
