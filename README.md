@@ -82,9 +82,8 @@ end
 - [x] Return creation context along with created items (use-case: access values created by inner factory definitions)
 - [ ] Add support to sequences (sequencing values)
 - [x] Add support to vary from a given list of values (use-case: generate distinct values from a given list, eg: user roles)
-- [ ] Rename `create_many` to `create_all` for performance usages and make `create_many` rely on `create_one` the same way `make_many` relies on `make_one`
-  - [ ] Allow user to pass a function to patch structs into entries so `create_all` can use `Repo.insert_all` properly (right now we just remove some fields and hope everything works, but each user might have a different need).
+- [x] Rename `create_many` to `create_all` for performance usages and make `create_many` rely on `create_one` the same way `make_many` relies on `make_one`
+  - [x] Allow user to pass a function to patch structs into entries so `create_all` can use `Repo.insert_all` properly (right now we just remove some fields and hope everything works, but each user might have a different need).
 - [ ] Check if grouping individual contexts by state can facilitate the return (eg: [state_context_1: %{}, state_context_2: %{}]).
 This would allow us to use multiple contexts that return similar states (keys) without mixing/ merging the result into a single map.
 - [ ] Add `:override` option that allows the user to replace fields dynamically without having to hardcode optional code inside `after_making` and `after_creating`
-
