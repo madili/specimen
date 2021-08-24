@@ -86,6 +86,6 @@ end
   - [x] Allow user to pass a function to patch structs into entries so `create_all` can use `Repo.insert_all` properly (right now we just remove some fields and hope everything works, but each user might have a different need).
 - [ ] Check if grouping individual contexts by state can facilitate the return (eg: [state_context_1: %{}, state_context_2: %{}]).
 This would allow us to use multiple contexts that return similar states (keys) without mixing/ merging the result into a single map.
-- [ ] Add `:override` option that allows the user to replace fields dynamically without having to hardcode optional code inside `after_making` and `after_creating`
 - [ ] Add `before_create` callback to allow factories to pre-configure how to patch entries beforehand
 - [ ] Add `before_make` callback to allow factories to pre-configure how to patch items beforehand
+- [x] Add `:override` option that allows the user to replace fields dynamically without having to hardcode optional code inside `after_making` and `after_creating`
