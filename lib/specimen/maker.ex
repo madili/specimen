@@ -1,6 +1,8 @@
 defmodule Specimen.Maker do
   @moduledoc false
 
+  alias Specimen.Builder
+
   @doc """
   Makes one item as specified by the factory.
 
@@ -16,7 +18,7 @@ defmodule Specimen.Maker do
     {[item], [context]} =
       module
       |> Specimen.new(context)
-      |> generate(factory, 1, states)
+      |> Builder.build(factory, 1, states)
 
     {item, context}
   end
@@ -35,33 +37,6 @@ defmodule Specimen.Maker do
 
     module
     |> Specimen.new(context)
-    |> generate(factory, count, states)
-  end
-
-  defp generate(%Specimen{} = specimen, factory, count, states) do
-    generator = fn ->
-      {struct, context} =
-        specimen
-        |> factory.build()
-        |> apply_states(factory, states)
-        |> Specimen.to_struct()
-
-      struct = factory.after_making(struct, context)
-
-      {struct, context}
-    end
-
-    generator
-    |> Stream.repeatedly()
-    |> Enum.take(count)
-    |> Enum.reduce({[], []}, fn {struct, context}, {structs, contexts} ->
-      {[struct | structs], [context | contexts]}
-    end)
-  end
-
-  defp apply_states(%{context: context} = specimen, factory, states) do
-    Enum.reduce(states, specimen, fn state, specimen ->
-      Specimen.transform(specimen, &apply(factory, :state, [state, &1, context]))
-    end)
+    |> Builder.build(factory, count, states)
   end
 end

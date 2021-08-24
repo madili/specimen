@@ -1,7 +1,7 @@
 defmodule Specimen.Creator do
   @moduledoc false
 
-  alias Specimen.Maker
+  alias Specimen.Builder
 
   @doc """
   Creates one item as specified by the factory.
@@ -19,7 +19,10 @@ defmodule Specimen.Creator do
     {states, opts} = Keyword.pop(opts, :states, [])
     {context, _opts} = Keyword.pop(opts, :context, [])
 
-    {struct, context} = Maker.make_one(module, factory, states: states, context: context)
+    {[struct], [context]} =
+      module
+      |> Specimen.new(context)
+      |> Builder.build(factory, 1, states)
 
     struct =
       struct
@@ -46,7 +49,9 @@ defmodule Specimen.Creator do
     {context, _opts} = Keyword.pop(opts, :context, [])
 
     {structs, contexts} =
-      Maker.make_many(module, factory, count, states: states, context: context)
+      module
+      |> Specimen.new(context)
+      |> Builder.build(factory, count, states)
 
     entries = Enum.map(structs, &Map.drop(&1, [:__meta__, :__struct__, :id]))
 
