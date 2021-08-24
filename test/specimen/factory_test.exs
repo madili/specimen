@@ -115,4 +115,12 @@ defmodule Specimen.FactoryTest do
 
     assert %User{id: 2} = user
   end
+
+  test "allows fields to be overriden dynamically" do
+    assert {user, _context} = Factory.make_one(states: [:status], overrides: [status: "active"])
+    assert %User{status: "active"} = user
+
+    assert {[user], _context} = Factory.make_many(1, states: [:status], overrides: [status: "active"])
+    assert %User{status: "active"} = user
+  end
 end

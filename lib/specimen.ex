@@ -9,7 +9,7 @@ defmodule Specimen do
 
   @type t :: %__MODULE__{}
 
-  defstruct module: nil, struct: nil, funs: [], includes: [], excludes: [], context: %{}
+  defstruct module: nil, struct: nil, funs: [], includes: [], excludes: [], context: %{}, overrides: %{}
 
   @doc """
   Creates a new Specimen.
@@ -66,17 +66,28 @@ defmodule Specimen do
   end
 
   @doc """
+  Overrides a existing field with the given value.
+  Overriden fields will discard previous transformations except other overrides.
+  """
+  def override(%Specimen{} = specimen, field, value) do
+    Map.update!(specimen, :overrides, &Map.put_new(&1, field, value))
+  end
+
+  @doc """
   Converts the Specimen into a struct.
   """
   def to_struct(%Specimen{module: module} = specimen) do
-    %{includes: includes, excludes: excludes} = specimen
+    %{includes: includes, excludes: excludes, overrides: overrides} = specimen
 
     {struct, context} = transform(specimen)
 
     fields =
       struct
       |> Map.from_struct()
-      |> Map.new(&map_field(&1, includes, excludes))
+      |> Map.new(fn {key, value} ->
+        {key, value} = map_field(key, value, includes, excludes)
+        {key, overrides[key] || value}
+      end)
 
     {struct!(module, fields), context}
   end
@@ -101,7 +112,7 @@ defmodule Specimen do
     end
   end
 
-  defp map_field({key, value}, includes, excludes) do
+  defp map_field(key, value, includes, excludes) do
     # TODO: Check if this is the best implementation for includes/ excludes.
     # Questions to ask:
     # - Do we want to consider both includes and excludes?

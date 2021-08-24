@@ -12,17 +12,19 @@ defmodule Specimen.Creator do
   - `:prefix` - The prefix to use when inserting the item.
   - `:states` - A list of states to be applied to the item.
   - `:context` - A map or keyword list to act as a shared context.
+  - `:overrides` - A list with field names and values to override.
   """
   def create_one(module, factory, opts \\ []) do
     {repo, opts} = Keyword.pop!(opts, :repo)
     {prefix, opts} = Keyword.pop(opts, :prefix)
     {states, opts} = Keyword.pop(opts, :states, [])
+    {overrides, opts} = Keyword.pop(opts, :overrides, [])
     {context, _opts} = Keyword.pop(opts, :context, [])
 
     {[struct], [context]} =
       module
       |> Specimen.new(context)
-      |> Builder.build(factory, 1, states)
+      |> Builder.build(factory, 1, states, overrides)
 
     struct =
       struct
@@ -41,17 +43,19 @@ defmodule Specimen.Creator do
   - `:prefix` - The prefix to use when inserting the item.
   - `:states` - A list of states to be applied to the item.
   - `:context` - A map or keyword list to act as a shared context.
+  - `:overrides` - A map or keyword list to override the struct's field.
   """
   def create_many(module, factory, count, opts \\ []) do
     {repo, opts} = Keyword.pop!(opts, :repo)
     {prefix, opts} = Keyword.pop(opts, :prefix)
     {states, opts} = Keyword.pop(opts, :states, [])
+    {overrides, opts} = Keyword.pop(opts, :overrides, [])
     {context, _opts} = Keyword.pop(opts, :context, [])
 
     {structs, contexts} =
       module
       |> Specimen.new(context)
-      |> Builder.build(factory, count, states)
+      |> Builder.build(factory, count, states, overrides)
 
     structs =
       structs
@@ -74,18 +78,20 @@ defmodule Specimen.Creator do
   - `:states` - A list of states to be applied to the item.
   - `:context` - A map or keyword list to act as a shared context.`
   - `:patch` - A function of single arity that will be used to patch the structs into insertable entries.
+  - `:overrides` - A map or keyword list to override the struct's field.
   """
   def create_all(module, factory, count, opts \\ []) do
     {repo, opts} = Keyword.pop!(opts, :repo)
     {patch, opts} = Keyword.pop!(opts, :patch)
     {prefix, opts} = Keyword.pop(opts, :prefix)
     {states, opts} = Keyword.pop(opts, :states, [])
+    {overrides, opts} = Keyword.pop(opts, :overrides, [])
     {context, _opts} = Keyword.pop(opts, :context, [])
 
     {structs, contexts} =
       module
       |> Specimen.new(context)
-      |> Builder.build(factory, count, states)
+      |> Builder.build(factory, count, states, overrides)
 
     entries = Enum.map(structs, &apply(patch, [&1]))
 

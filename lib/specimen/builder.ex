@@ -7,9 +7,9 @@ defmodule Specimen.Builder do
   @type context :: map() | keyword()
 
   @doc false
-  @spec build(Specimen.t(), module(), integer(), list()) :: {[struct()], [context()]}
-  def build(%Specimen{} = specimen, factory, count, states) do
-    generator = fn -> generate(specimen, factory, states) end
+  @spec build(Specimen.t(), module(), integer(), list(), list()) :: {[struct()], [context()]}
+  def build(%Specimen{} = specimen, factory, count, states, overrides) do
+    generator = fn -> generate(specimen, factory, states, overrides) end
 
     generator
     |> Stream.repeatedly()
@@ -17,12 +17,18 @@ defmodule Specimen.Builder do
     |> Enum.reduce({[], []}, &collect_contexts/2)
   end
 
-  defp generate(specimen, factory, states) do
-    {struct, context} =
+  defp generate(specimen, factory, states, overrides) do
+    specimen =
       specimen
       |> factory.build()
       |> apply_states(factory, states)
-      |> Specimen.to_struct()
+
+    specimen =
+      Enum.reduce(overrides, specimen, fn {field, value}, specimen ->
+        Specimen.override(specimen, field, value)
+      end)
+
+    {struct, context} = Specimen.to_struct(specimen)
 
     struct = factory.after_making(struct, context)
 

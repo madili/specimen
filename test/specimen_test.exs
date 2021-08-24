@@ -76,5 +76,17 @@ defmodule SpecimenTest do
       assert %Specimen{includes: [_ | _], excludes: [], funs: [_ | _]} = specimen
       assert {%User{}, _context} = Specimen.to_struct(specimen)
     end
+
+    test "override/2 adds a value to be overriden" do
+      specimen =
+        User
+        |> Specimen.new()
+        |> Specimen.override(:name, "Joe")
+        |> Specimen.include(:name, "John")
+
+      assert %Specimen{overrides: %{name: "Joe"}} = specimen
+      assert {%User{name: "Joe"}, _context} = Specimen.to_struct(specimen)
+    end
+
   end
 end
