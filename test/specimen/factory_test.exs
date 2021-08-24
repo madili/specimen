@@ -38,6 +38,18 @@ defmodule Specimen.FactoryTest do
     assert %User{id: ^id, name: "Joe", lastname: "Schmoe", status: "active"} = Repo.get!(User, id)
   end
 
+  test "create_all/2 is exposed in the factory" do
+    assert {[user], _context} =
+             Factory.create_all(1,
+               repo: Repo,
+               states: [:status],
+               patch: &Map.drop(&1, [:__meta__, :__struct__, :id])
+             )
+
+    assert %User{id: id} = user
+    assert %User{id: ^id, name: "Joe", lastname: "Schmoe", status: "active"} = Repo.get!(User, id)
+  end
+
   test "factory accepts repo configuration" do
     defmodule UserFactoryWithRepoOption, do: use(Specimen.Factory, module: User, repo: Repo)
 
@@ -98,7 +110,9 @@ defmodule Specimen.FactoryTest do
     assert {user, %{manual_sequence: true}} = Factory.make_one(context: [id: 1], states: [:id])
     assert %User{id: 1} = user
 
-    assert {[user], [%{manual_sequence: true}]} = Factory.make_many(1, context: [id: 2], states: [:id])
+    assert {[user], [%{manual_sequence: true}]} =
+             Factory.make_many(1, context: [id: 2], states: [:id])
+
     assert %User{id: 2} = user
   end
 end

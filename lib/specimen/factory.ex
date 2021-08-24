@@ -30,6 +30,7 @@ defmodule Specimen.Factory do
           | {:repo, Ecto.Repo.t()}
           | {:prefix, binary()}
           | {:context, context()}
+          | {:patch, fun()}
 
   @callback make_one(opts :: [option]) :: {struct(), context()}
 
@@ -38,6 +39,8 @@ defmodule Specimen.Factory do
   @callback create_one(opts :: [option]) :: {struct(), context()}
 
   @callback create_many(count :: integer(), opts :: [option]) :: {[struct()], [context()]}
+
+  @callback create_all(count :: integer(), opts :: [option]) :: {[struct()], [context()]}
 
   @callback build(Specimen.t()) :: Specimen.t()
 
@@ -84,6 +87,11 @@ defmodule Specimen.Factory do
       def create_many(count, opts \\ []) do
         opts = Keyword.merge([repo: @factory_repo, prefix: @factory_prefix], opts)
         Specimen.Creator.create_many(@factory_module, @factory, count, opts)
+      end
+
+      def create_all(count, opts \\ []) do
+        opts = Keyword.merge([repo: @factory_repo, prefix: @factory_prefix], opts)
+        Specimen.Creator.create_all(@factory_module, @factory, count, opts)
       end
 
       def build(%Specimen{module: module, context: context}) when module != unquote(module) do
